@@ -7,6 +7,7 @@ import thkoeln.archilab.ecommerce.solution.shoppingcart.domain.AbstractOrder;
 import thkoeln.archilab.ecommerce.solution.shoppingcart.domain.ShoppingCartPart;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +25,9 @@ public class Order extends AbstractOrder {
     private List<OrderPart> orderParts = new ArrayList<>();
 
 
-
+    public List<OrderPart> orderPartsList() {
+        return orderParts;
+    }
     @Override
     public List<ShoppingCartPart> getOrderParts() {
         List<ShoppingCartPart> list = new ArrayList<> ();

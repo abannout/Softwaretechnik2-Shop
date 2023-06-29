@@ -55,6 +55,15 @@ public class ShoppingCart {
         }
         return false;
     }
+    public ShoppingCartPart getPart(UUID itemId){
+        for (ShoppingCartPart shoppingCartPart : shoppingCartParts
+        ) {
+            if (shoppingCartPart.getAbstractItem().getUuid() == itemId) {
+                return shoppingCartPart;
+            }
+        }
+        return null;
+    }
 
     public void changeStatusToFilled() {
         this.shoppingCartStatus = ShoppingCartStatus.FILLED;

@@ -8,6 +8,8 @@ import thkoeln.archilab.ecommerce.domainprimitives.MailAddress;
 import thkoeln.archilab.ecommerce.domainprimitives.PostalCode;
 import thkoeln.archilab.ecommerce.solution.client.domain.Client;
 import thkoeln.archilab.ecommerce.solution.client.domain.ClientRepository;
+import thkoeln.archilab.ecommerce.solution.shoppingcart.domain.ShoppingCart;
+import thkoeln.archilab.ecommerce.solution.shoppingcart.domain.ShoppingCartRepository;
 import thkoeln.archilab.ecommerce.usecases.ClientRegistrationUseCases;
 import thkoeln.archilab.ecommerce.usecases.ClientType;
 import thkoeln.archilab.ecommerce.usecases.domainprimitivetypes.HomeAddressType;
@@ -24,10 +26,13 @@ import thkoeln.archilab.ecommerce.usecases.domainprimitivetypes.MailAddressType;
 public class ClientService implements ClientRegistrationUseCases {
 
     private final ClientRepository clientRepository;
-
+    private final ShoppingCartRepository shoppingCartRepository;
+    private final ClientCartService clientCartService;
     @Autowired
-    public ClientService(ClientRepository clientRepository) {
+    public ClientService(ClientRepository clientRepository, ShoppingCartRepository shoppingCartRepository, ClientCartService clientCartService) {
         this.clientRepository = clientRepository;
+        this.shoppingCartRepository = shoppingCartRepository;
+        this.clientCartService = clientCartService;
     }
 
     @Override
@@ -38,10 +43,11 @@ public class ClientService implements ClientRegistrationUseCases {
         } else if (clientRepository.existsClientByEmailMailAddress(mailAddress.toString())) {
             throw new ShopException("client already exist");
         } else {
-            PostalCode postalcode = new PostalCode(homeAddress.getPostalCode().toString());
+            var postalcode = new PostalCode(homeAddress.getPostalCode().toString());
             var address = new HomeAddress(homeAddress.getStreet(), homeAddress.getCity(), postalcode);
-            Client client = new Client(new MailAddress(mailAddress.toString()), name, address );
+            var client = new Client(new MailAddress(mailAddress.toString()), name, address );
             clientRepository.save(client);
+
         }
     }
 

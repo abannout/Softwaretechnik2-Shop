@@ -1,6 +1,7 @@
 package thkoeln.archilab.ecommerce.solution.shoppingcart.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import thkoeln.archilab.ecommerce.domainprimitives.Money;
 
@@ -10,7 +11,6 @@ import java.util.UUID;
 @Setter
 @Getter
 @Entity
-
 public abstract class AbstractItem {
     @Id
     private UUID uuid;

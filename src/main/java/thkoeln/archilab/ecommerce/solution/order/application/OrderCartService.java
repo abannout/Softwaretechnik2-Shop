@@ -2,6 +2,7 @@ package thkoeln.archilab.ecommerce.solution.order.application;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import thkoeln.archilab.ecommerce.domainprimitives.MailAddress;
 import thkoeln.archilab.ecommerce.solution.order.domain.Order;
 import thkoeln.archilab.ecommerce.solution.order.domain.OrderRepository;
 import thkoeln.archilab.ecommerce.solution.shoppingcart.application.OrderCartServiceInterface;
