@@ -176,6 +176,11 @@ public class InitialMasterDataCreator {
     }
 
 
+    public void deleteAll() {
+        clientRegistrationUseCases.deleteAllClients();
+        itemCatalogUseCases.deleteItemCatalog();
+    }
+
     @Autowired
     public InitialMasterDataCreator(
             ClientRegistrationUseCases clientRegistrationUseCases,
