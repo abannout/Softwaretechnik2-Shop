@@ -1,4 +1,5 @@
 package thkoeln.archilab.ecommerce.regression;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ public class RegressionClientRegistrationTest {
     @Autowired
     private ShoppingCartUseCases shoppingCartUseCases;
     @Autowired
-    private InitialMasterDataCreator InitialMasterDataCreator;
+    private InitialMasterDataCreator initialMasterDataCreator;
 
     private MailAddressType nonExistingMailAddress;
 
@@ -40,13 +41,13 @@ public class RegressionClientRegistrationTest {
     @Test
     public void testAllClientsRegistered() {
         // given
-        InitialMasterDataCreator.registerAllClients();
+        initialMasterDataCreator.registerAllClients();
 
         // when
         ClientType client3 = clientRegistrationUseCases.getClientData( CLIENT_EMAIL[3] );
 
         // then
-        Assertions.assertEquals( InitialMasterDataCreator.CLIENT_NAME[3], client3.getName() );
+        Assertions.assertEquals( initialMasterDataCreator.CLIENT_NAME[3], client3.getName() );
         Assertions.assertEquals( CLIENT_EMAIL[3], client3.getMailAddress() );
         Assertions.assertEquals( CLIENT_ADDRESS[3], client3.getHomeAddress() );
     }
@@ -55,7 +56,7 @@ public class RegressionClientRegistrationTest {
     @Test
     public void testRegisterClientWithDuplicateMailAddress() {
         // given
-        InitialMasterDataCreator.registerAllClients();
+        initialMasterDataCreator.registerAllClients();
 
         // when
         // then
@@ -67,13 +68,13 @@ public class RegressionClientRegistrationTest {
     @Test
     public void testRegisterClientWithDuplicateNameOrHomeAddress() {
         // given
-        InitialMasterDataCreator.registerAllClients();
+        initialMasterDataCreator.registerAllClients();
         MailAddressType newMailAddress = instantiateMailAddress( "some@this.de" );
 
         // when
         // then
         assertDoesNotThrow(() ->
-                clientRegistrationUseCases.register( InitialMasterDataCreator.CLIENT_NAME[2], newMailAddress,
+                clientRegistrationUseCases.register( initialMasterDataCreator.CLIENT_NAME[2], newMailAddress,
                         CLIENT_ADDRESS[2] ) );
     }
 
@@ -81,7 +82,7 @@ public class RegressionClientRegistrationTest {
     @Test
     public void testDeleteClientsNoMoreClients() {
         // given
-        InitialMasterDataCreator.registerAllClients();
+        initialMasterDataCreator.registerAllClients();
 
         // when
         clientRegistrationUseCases.deleteAllClients();
@@ -90,4 +91,8 @@ public class RegressionClientRegistrationTest {
         assertThrows( ShopException.class, () -> clientRegistrationUseCases.getClientData( CLIENT_EMAIL[0] ) );
     }
 
+    @AfterEach
+    public void tearDown() {
+        initialMasterDataCreator.deleteAll();
+    }
 }
