@@ -11,17 +11,17 @@ import java.util.UUID;
 @RestController
 public class ShoppingCartRestController {
 
-    private final ShoppingCartService shoppingCartService;
+    private final CartControllerService cartControllerService;
 
     @Autowired
-    public ShoppingCartRestController(ShoppingCartService shoppingCartService) {
-        this.shoppingCartService = shoppingCartService;
+    public ShoppingCartRestController(CartControllerService shoppingCartService) {
+        this.cartControllerService = shoppingCartService;
     }
 
     @GetMapping("/shoppingCarts")
     public ResponseEntity<ShoppingCartDTO> getCartByMail(@RequestParam(value = "mailAddress", required = false) String mailAddress) {
         try {
-            var shoppingCart = shoppingCartService.getCartDtoByClientMail(mailAddress);
+            var shoppingCart = cartControllerService.getCartDtoByClientMail(mailAddress);
 
 
             if (StringUtils.isEmpty(mailAddress)) {
@@ -37,7 +37,7 @@ public class ShoppingCartRestController {
     @GetMapping("/shoppingCarts/{shoppingCartId}/shoppingCartParts/{itemId}")
     public ResponseEntity<ShoppingCartPartDTO> getShoppingCartPart(@PathVariable("shoppingCartId") UUID shoppingCartId, @PathVariable("itemId") UUID itemId) {
         try {
-            var carPart = shoppingCartService.getCartPartByIdAndItemId(shoppingCartId, itemId);
+            var carPart = cartControllerService.getCartPartByIdAndItemId(shoppingCartId, itemId);
             if (shoppingCartId == null || itemId == null || carPart == null) {
                 return ResponseEntity.notFound().build();
             }
@@ -54,11 +54,11 @@ public class ShoppingCartRestController {
         try {
 
 
-            var carPart = shoppingCartService.getCartPartByIdAndItemId(shoppingCartId, itemId);
+            var carPart = cartControllerService.getCartPartByIdAndItemId(shoppingCartId, itemId);
             if (shoppingCartId == null || itemId == null || carPart == null) {
                 return ResponseEntity.notFound().build();
             }
-            boolean removed = shoppingCartService.deletePartFromCart(shoppingCartId, itemId);
+            boolean removed = cartControllerService.deletePartFromCart(shoppingCartId, itemId);
             if (removed) {
                 return ResponseEntity.ok("easy");
             } else {
@@ -68,6 +68,17 @@ public class ShoppingCartRestController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/shoppingCarts/{shoppingCartId}/shoppingCartParts")
+    public ResponseEntity<ShoppingCartDTO> addOrRemoveCartItem(@PathVariable("ShoppingCartId") UUID shoppingCartId,@RequestBody ShoppingCartPartDTO shoppingCartPartDTO){
+        try {
+                return null;
+        }catch (ShopException e){
+            return ResponseEntity.notFound().build();
+
+        }
+    }
+
 
 
 }
