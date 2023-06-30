@@ -1,5 +1,6 @@
 package thkoeln.archilab.ecommerce.regression;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,11 @@ public class RegressionInventoryManagementTest {
         assertEquals( inventory6before - 1, inventory6after );
         assertEquals( inventory1before - 3, inventory1after );
         assertEquals( 0, inventory9after );
+    }
+
+    @AfterEach
+    public void tearDown() {
+        initialMasterDataCreator.deleteAll();
     }
 
 }
