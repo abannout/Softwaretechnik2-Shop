@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @RestController
 public class OrderRestController {
-    private OrderService orderService;
+    private final OrderService orderService;
 
     @Autowired
     public OrderRestController(OrderService orderService) {
@@ -26,7 +26,7 @@ public class OrderRestController {
     }
 
     @GetMapping("/orders")
-    public ResponseEntity<List<OrderDTO>> getOrdersByMail(@RequestParam(value = "mailAddress", required = false) String mailAddress,@RequestParam(value = "filter",defaultValue = "latest",required = false) String filter) {
+    public ResponseEntity<List<OrderDTO>> getOrdersByMail(@RequestParam(value = "mailAddress", required = false) String mailAddress,@RequestParam(value = "filter",required = false) String filter) {
 
         List<OrderDTO> orderDTOS = new ArrayList<>();
         var totalPrice=0.0f;
@@ -53,19 +53,18 @@ public class OrderRestController {
         }
         List<Order> orders = orderService.getOrders(mailAddress);
         if (!orders.isEmpty()) {
+            List<OrderPartDTO> orderpartsDTO = new ArrayList<>();
             for (Order order : orders
             ) {
-                List<OrderPartDTO> orderpartsDTO = new ArrayList<>();
-
-
+                var total=0.0f;
                 for (OrderPart orderPart : order.orderPartsList()
                 ) {
                     orderpartsDTO.add(new OrderPartDTO(orderPart.getItem().getUuid(), orderPart.getQuantity(), orderPart.getComment()));
-                    totalPrice+= orderPart.getItem().getSellPrice().getAmount() * orderPart.getQuantity();
+                    total+= orderPart.getItem().getSellPrice().getAmount() * orderPart.getQuantity();
                     currency=orderPart.getItem().getSellPrice().getCurrency();
                 }
                 var mail = new MailAddress(mailAddress);
-                orderDTOS.add(new OrderDTO(order.getUuid(),mail,new Money(totalPrice,currency), orderpartsDTO));
+                orderDTOS.add(new OrderDTO(order.getUuid(),mail,new Money(total,currency), orderpartsDTO));
             }
         }
         return ResponseEntity.ok().body(orderDTOS);
