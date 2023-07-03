@@ -32,7 +32,7 @@ public class DeliveryService implements DeliveryUseCases {
             throw new ShopException("deliveryRecipient is null");
         }
 
-        var client = clientRepository.findByEmailMailAddress(deliveryRecipient.getMailAddress().toString()).get(0);
+        var client = clientRepository.findByEmailMailAddressString(deliveryRecipient.getMailAddress().toString()).get(0);
         Delivery delivery = new Delivery(deliveryContent, client);
         deliveryRepository.save(delivery);
         return delivery.getUuid();
@@ -41,7 +41,7 @@ public class DeliveryService implements DeliveryUseCases {
     @Override
     public Map<UUID, Integer> getDeliveryHistory(MailAddressType clientMailAddress) {
         HashMap<UUID, Integer> deliveryHistory = new HashMap<>();
-        var deliveryList = deliveryRepository.getAllByClientEmailMailAddress(clientMailAddress.toString());
+        var deliveryList = deliveryRepository.getAllByClientEmailMailAddressString(clientMailAddress.toString());
         for (Delivery delivery : deliveryList) {
             delivery.getDeliveryContent().forEach((uuid, integer) -> {
                 var oldQuantity = deliveryHistory.getOrDefault(uuid, 0);

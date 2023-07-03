@@ -27,7 +27,7 @@ public class CartControllerService {
         if (!clientCartServiceInterface.existsClientByEmailMailAddress(mail)){
             throw new ShopException("client does not exist");
         }
-        var cart = shoppingCartRepository.findShoppingCartByAbstractClientEmailMailAddress(mail);
+        var cart = shoppingCartRepository.findShoppingCartByAbstractClientEmailMailAddressString(mail);
         if (cart.isEmpty()){
             var client = getClient(mail);
             var newCart = new ShoppingCart();
@@ -63,28 +63,49 @@ public class CartControllerService {
         cartPartDTO.setComment(cart.get().getPart(itemId).getComment());
         return cartPartDTO;
     }
-    public boolean deletePartFromCart (UUID cartId, UUID itemId){
+    public void deletePartFromCart (UUID cartId, UUID itemId){
         var removed = false;
         var cart = shoppingCartRepository.findById(cartId);
         if (cart.isEmpty() || !cart.get().contains(itemId)){
             throw new ShopException("item is not in ShoppingCart");
         }
-        for (ShoppingCartPart shoppingCartPart:cart.get().getShoppingCartParts()
-        ) {
-            if (shoppingCartPart.getAbstractItem().uuid()==itemId){
-                cart.get().removeOrderPart(shoppingCartPart);
-                removed = true;
-                break;
-            }
-
-        }
+        var toRemove =cart.get().getPart(itemId).getQuantity();
+       shoppingCartService.removeItemFromShoppingCart(cart.get().getAbstractClient().mail(), itemId,toRemove);
         shoppingCartRepository.save(cart.get());
-        return removed;
-    }
+        }
+
+
     private AbstractClient getClient(String clientMail) {
         if (!clientCartServiceInterface.existsClientByEmailMailAddress(clientMail)) {
             throw new ShopException("client does not exist");
         }
         return clientCartServiceInterface.findByEmailMailAddress(clientMail);
     }
+    public ShoppingCartDTO createCartPartFromDTO(UUID shoppingCartId,ShoppingCartPartDTO cartPartDTO){
+        var cart = shoppingCartRepository.findById(shoppingCartId);
+        if (cart.isEmpty()){
+            throw new ShopException("No Cart ! :(");
+        }
+        if (cartPartDTO.getQuantity() < 0){
+            cartPartDTO.setQuantity(Math.abs(cartPartDTO.getQuantity()));
+            cart.get().getPart(cartPartDTO.getItemId()).setComment(cartPartDTO.getComment());
+            shoppingCartService.removeItemFromShoppingCart(cart.get().getAbstractClient().mail(), cartPartDTO.getItemId(), cartPartDTO.getQuantity());
+
+
+            shoppingCartRepository.save(cart.get());
+            return mapToShoppingCartDTO(cart.get());
+        }
+        else if (cartPartDTO.getQuantity() > 0){
+            shoppingCartService.addItemToShoppingCart(cart.get().getAbstractClient().mail(), cartPartDTO.getItemId(), cartPartDTO.getQuantity());
+            cart.get().getPart(cartPartDTO.getItemId()).setComment(cartPartDTO.getComment());
+            shoppingCartRepository.save(cart.get());
+            return mapToShoppingCartDTO(cart.get());
+        }
+        else {return mapToShoppingCartDTO(cart.get());}
+    }
+    public ShoppingCart getCartById (UUID cartId){
+        var cart = shoppingCartRepository.findById(cartId);
+        return cart.orElse(null);
+    }
+
 }

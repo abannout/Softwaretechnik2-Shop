@@ -49,7 +49,7 @@ public class ShoppingCart {
     public boolean contains(UUID itemId) {
         for (ShoppingCartPart shoppingCartPart : shoppingCartParts
         ) {
-            if (shoppingCartPart.getAbstractItem().getUuid() == itemId) {
+            if (shoppingCartPart.getAbstractItem().uuid().equals(itemId)) {
                 return true;
             }
         }
@@ -58,11 +58,19 @@ public class ShoppingCart {
     public ShoppingCartPart getPart(UUID itemId){
         for (ShoppingCartPart shoppingCartPart : shoppingCartParts
         ) {
-            if (shoppingCartPart.getAbstractItem().getUuid() == itemId) {
+            if (shoppingCartPart.getAbstractItem().uuid().equals(itemId)) {
                 return shoppingCartPart;
             }
         }
         return null;
+    }
+    public int getItemTotal(){
+        var total =0;
+        for (ShoppingCartPart shoppingCartPart : shoppingCartParts
+        ) {
+            total+=shoppingCartPart.getQuantity();
+        }
+        return total;
     }
 
     public void changeStatusToFilled() {

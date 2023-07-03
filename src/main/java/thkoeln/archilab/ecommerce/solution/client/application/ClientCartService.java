@@ -23,14 +23,14 @@ public class ClientCartService implements ClientCartServiceInterface {
 
     @Override
     public boolean existsClientByEmailMailAddress(String email) {
-        return clientRepository.existsClientByEmailMailAddress(email);
+        return clientRepository.existsClientByEmailMailAddressString(email);
     }
 
 
 
     @Override
     public AbstractClient findByEmailMailAddress(String mail) {
-        var client= clientRepository.findByEmailMailAddress(mail);
+        var client= clientRepository.findByEmailMailAddressString(mail);
         if (client.isEmpty()){
             throw new ShopException("client does not exist!");
         }

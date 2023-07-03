@@ -1,21 +1,25 @@
 package thkoeln.archilab.ecommerce.solution.shoppingcart.application;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import thkoeln.archilab.ecommerce.ShopException;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
 public class ShoppingCartRestController {
 
     private final CartControllerService cartControllerService;
-
+    private final ShoppingCartService shoppingCartService;
     @Autowired
-    public ShoppingCartRestController(CartControllerService shoppingCartService) {
+    public ShoppingCartRestController(CartControllerService shoppingCartService, ShoppingCartService shoppingCartService1) {
         this.cartControllerService = shoppingCartService;
+        this.shoppingCartService = shoppingCartService1;
     }
 
     @GetMapping("/shoppingCarts")
@@ -58,25 +62,43 @@ public class ShoppingCartRestController {
             if (shoppingCartId == null || itemId == null || carPart == null) {
                 return ResponseEntity.notFound().build();
             }
-            boolean removed = cartControllerService.deletePartFromCart(shoppingCartId, itemId);
-            if (removed) {
+            cartControllerService.deletePartFromCart(shoppingCartId, itemId);
+
                 return ResponseEntity.ok("easy");
-            } else {
-                return ResponseEntity.notFound().build();
-            }
+
         } catch (ShopException e) {
+            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping("/shoppingCarts/{shoppingCartId}/shoppingCartParts")
-    public ResponseEntity<ShoppingCartDTO> addOrRemoveCartItem(@PathVariable("ShoppingCartId") UUID shoppingCartId,@RequestBody ShoppingCartPartDTO shoppingCartPartDTO){
+    public ResponseEntity<ShoppingCartDTO> addOrRemoveCartItem(@PathVariable("shoppingCartId") UUID shoppingCartId,@RequestBody ShoppingCartPartDTO shoppingCartPartDTO){
         try {
-                return null;
+            ShoppingCartDTO shoppingCartDTO = cartControllerService.createCartPartFromDTO(shoppingCartId,shoppingCartPartDTO);
+            URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(shoppingCartDTO.getId()).toUri();
+                return ResponseEntity.created(uri).body(shoppingCartDTO);
         }catch (ShopException e){
-            return ResponseEntity.notFound().build();
+            e.printStackTrace();
+            return new ResponseEntity(HttpStatus.CONFLICT);
 
         }
+    }
+
+    @PutMapping("/shoppingCarts/{shoppingCartId}/checkout")
+    public ResponseEntity<String> checkoutShoppingCart(@PathVariable("shoppingCartId") UUID shoppingCartId){
+       try {
+           var cart = cartControllerService.getCartById(shoppingCartId);
+            if (cart ==null){
+                return ResponseEntity.notFound().build();
+            }
+           shoppingCartService.checkout(cart.getAbstractClient().mail());
+           return ResponseEntity.ok("Checkout successful");
+       }catch (ShopException e){
+           e.printStackTrace();
+           return ResponseEntity.status(HttpStatus.CONFLICT).build();
+       }
+
     }
 
 

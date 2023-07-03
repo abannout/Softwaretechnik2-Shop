@@ -6,5 +6,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PaymentRepository extends CrudRepository<Payment, UUID> {
-List<Payment> findAllByClientEmailMailAddress(String clientMail);
+List<Payment> findAllByClientEmailMailAddressString(String clientMail);
 }

@@ -15,11 +15,11 @@ import java.util.regex.Pattern;
 @NoArgsConstructor
 @Getter
 public class MailAddress implements MailAddressType {
-    private String mailAddress;
+    private String mailAddressString;
 
     @Override
     public String toString() {
-        return mailAddress;
+        return mailAddressString;
     }
 
     public static MailAddressType of(String mailAddressAsString) throws ShopException {
@@ -59,7 +59,7 @@ public class MailAddress implements MailAddressType {
             return false;
         }
         MailAddress other = (MailAddress) obj;
-        return mailAddress.equals(other.getMailAddress());
+        return mailAddressString.equals(other.getMailAddressString());
     }
 
 }

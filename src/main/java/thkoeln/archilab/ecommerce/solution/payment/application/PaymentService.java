@@ -51,7 +51,7 @@ public class PaymentService implements PaymentUseCases {
         var client = getClient(clientMailAddress.toString());
         var total = 0f;
         var currency="";
-        var clientPaymentList = paymentRepository.findAllByClientEmailMailAddress(clientMailAddress.toString());
+        var clientPaymentList = paymentRepository.findAllByClientEmailMailAddressString(clientMailAddress.toString());
         for (Payment payment :clientPaymentList
                 ) {
             total+=payment.getPayment().getAmount();
@@ -66,7 +66,7 @@ public class PaymentService implements PaymentUseCases {
     }
     private Client getClient(String clientMail) {
 
-        var client = clientRepository.findByEmailMailAddress(clientMail);
+        var client = clientRepository.findByEmailMailAddressString(clientMail);
         if (client.isEmpty()) {
             throw new ShopException("client does not exist");
         }

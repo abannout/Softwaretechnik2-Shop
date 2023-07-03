@@ -8,7 +8,6 @@ import thkoeln.archilab.ecommerce.domainprimitives.MailAddress;
 import thkoeln.archilab.ecommerce.domainprimitives.PostalCode;
 import thkoeln.archilab.ecommerce.solution.client.domain.Client;
 import thkoeln.archilab.ecommerce.solution.client.domain.ClientRepository;
-import thkoeln.archilab.ecommerce.solution.shoppingcart.domain.ShoppingCart;
 import thkoeln.archilab.ecommerce.solution.shoppingcart.domain.ShoppingCartRepository;
 import thkoeln.archilab.ecommerce.usecases.ClientRegistrationUseCases;
 import thkoeln.archilab.ecommerce.usecases.ClientType;
@@ -40,7 +39,7 @@ public class ClientService implements ClientRegistrationUseCases {
         if (name == null || homeAddress == null || mailAddress == null
                 || name.isEmpty()) {
             throw new ShopException("invalid data!");
-        } else if (clientRepository.existsClientByEmailMailAddress(mailAddress.toString())) {
+        } else if (clientRepository.existsClientByEmailMailAddressString(mailAddress.toString())) {
             throw new ShopException("client already exist");
         } else {
             var postalcode = new PostalCode(homeAddress.getPostalCode().toString());
@@ -55,10 +54,10 @@ public class ClientService implements ClientRegistrationUseCases {
     public void changeAddress(MailAddressType clientMailAddress, HomeAddressType homeAddress) {
         if (clientMailAddress == null || homeAddress == null) {
             throw new ShopException("invalid data!");
-        } else if (!clientRepository.existsClientByEmailMailAddress(clientMailAddress.toString())) {
+        } else if (!clientRepository.existsClientByEmailMailAddressString(clientMailAddress.toString())) {
             throw new ShopException("client does not exist");
         } else {
-            var optionalClient = clientRepository.findByEmailMailAddress(clientMailAddress.toString());
+            var optionalClient = clientRepository.findByEmailMailAddressString(clientMailAddress.toString());
             var client = optionalClient.get(0);
             client.setAddress((HomeAddress) homeAddress);
             clientRepository.save(client);
@@ -67,10 +66,10 @@ public class ClientService implements ClientRegistrationUseCases {
 
     @Override
     public ClientType getClientData(MailAddressType clientMailAddress) {
-        if (!clientRepository.existsClientByEmailMailAddress(clientMailAddress.toString())) {
+        if (!clientRepository.existsClientByEmailMailAddressString(clientMailAddress.toString())) {
             throw new ShopException("client does not exist");
         }
-        var optionalClient = clientRepository.findByEmailMailAddress(clientMailAddress.toString());
+        var optionalClient = clientRepository.findByEmailMailAddressString(clientMailAddress.toString());
         return optionalClient.get(0);
     }
 

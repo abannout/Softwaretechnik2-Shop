@@ -6,6 +6,6 @@ import java.util.List;
 
 
 public interface ClientRepository extends CrudRepository <Client, String> {
-     boolean existsClientByEmailMailAddress (String mail);
-     List<Client> findByEmailMailAddress(String mail);
+     boolean existsClientByEmailMailAddressString(String mail);
+     List<Client> findByEmailMailAddressString(String mail);
 }

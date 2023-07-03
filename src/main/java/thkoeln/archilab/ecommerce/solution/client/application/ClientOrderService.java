@@ -19,7 +19,7 @@ public class ClientOrderService implements ClientOrderServiceInterface {
 
     @Override
     public List<Order> getOrders(String mailAddress) {
-        var client = clientRepository.findByEmailMailAddress(mailAddress);
+        var client = clientRepository.findByEmailMailAddressString(mailAddress);
         List<Order> orders = new ArrayList<>();
         if (!client.isEmpty()){
 
@@ -34,7 +34,7 @@ public class ClientOrderService implements ClientOrderServiceInterface {
 
     @Override
     public Order getLatestOrder(String mailAddress) {
-        var client = clientRepository.findByEmailMailAddress(mailAddress);
+        var client = clientRepository.findByEmailMailAddressString(mailAddress);
         if (!client.isEmpty()){return client.get(0).getOrders().get(client.get(0).getOrders().size()-1);}
         return null;
     }

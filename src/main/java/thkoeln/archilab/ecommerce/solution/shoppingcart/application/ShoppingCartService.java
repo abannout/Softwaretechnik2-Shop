@@ -63,7 +63,7 @@ public class ShoppingCartService implements ShoppingCartUseCases, InventoryManag
                 if (existingShoppingCart.contains(itemId)) {
                     for (ShoppingCartPart shoppingcartpart1 : existingShoppingCart.getShoppingCartParts()
                     ) {
-                        if (shoppingcartpart1.getAbstractItem().getUuid() == itemId) {
+                        if (shoppingcartpart1.getAbstractItem().uuid().equals(itemId)) {
                             shoppingcartpart1.setQuantity(shoppingcartpart1.getQuantity() + quantity);
                             item.setReservedQuantity(item.reservedQuantity() + quantity);
                         }
@@ -97,7 +97,7 @@ public class ShoppingCartService implements ShoppingCartUseCases, InventoryManag
             var item = getItem(itemId);
             for (ShoppingCartPart shoppingCartPart : shoppingCart.getShoppingCartParts()
             ) {
-                if (shoppingCartPart.getAbstractItem().getUuid() == itemId) {
+                if (shoppingCartPart.getAbstractItem().getUuid().equals(itemId)) {
                     shoppingCartPart.setQuantity(shoppingCartPart.getQuantity() - quantity);
                     item.setReservedQuantity(item.reservedQuantity() - quantity);
                     if (shoppingCartPart.getQuantity() == 0) {
@@ -218,6 +218,9 @@ public class ShoppingCartService implements ShoppingCartUseCases, InventoryManag
         var cart = getShoppingCartByClientMail(clientMailAddress.toString());
         if (isEmpty(clientMailAddress)) {
             throw new ShopException("shopping cart is empty");
+        }
+        if (cart.getItemTotal()>20){
+            throw new ShopException("item total is more than 20");
         }
         if (cart.getShoppingCartStatus() == ShoppingCartStatus.FILLED) {
             paymentUseCases.authorizePayment(clientMailAddress, getShoppingCartAsMoneyValue(clientMailAddress));
@@ -393,7 +396,7 @@ public class ShoppingCartService implements ShoppingCartUseCases, InventoryManag
     }
 
     public ShoppingCart getShoppingCartByClientMail(String mail) {
-        var cart = shoppingCartRepository.findShoppingCartByAbstractClientEmailMailAddress(mail);
+        var cart = shoppingCartRepository.findShoppingCartByAbstractClientEmailMailAddressString(mail);
         return cart.orElse(null);
     }
 //    public ShoppingCartDTO getCartDtoByClientMail(String mail) {

@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface ShoppingCartRepository extends CrudRepository<ShoppingCart, UUID> {
 
     List<ShoppingCart> findAllByShoppingCartStatus(ShoppingCartStatus shoppingCartStatus);
-    Optional<ShoppingCart> findShoppingCartByAbstractClientEmailMailAddress(String mail);
+    Optional<ShoppingCart> findShoppingCartByAbstractClientEmailMailAddressString(String mail);
 
 
 }
