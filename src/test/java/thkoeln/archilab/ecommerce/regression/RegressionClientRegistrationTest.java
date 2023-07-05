@@ -1,5 +1,5 @@
 package thkoeln.archilab.ecommerce.regression;
-import org.junit.jupiter.api.AfterEach;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import thkoeln.archilab.ecommerce.ShopException;
 import thkoeln.archilab.ecommerce.masterdata.InitialMasterDataCreator;
-import thkoeln.archilab.ecommerce.usecases.*;
+import thkoeln.archilab.ecommerce.usecases.ClientRegistrationUseCases;
+import thkoeln.archilab.ecommerce.usecases.ClientType;
 import thkoeln.archilab.ecommerce.usecases.domainprimitivetypes.MailAddressType;
 
 import javax.transaction.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static thkoeln.archilab.ecommerce.masterdata.FactoryMethodInvoker.instantiateMailAddress;
 import static thkoeln.archilab.ecommerce.masterdata.InitialMasterDataCreator.CLIENT_ADDRESS;
 import static thkoeln.archilab.ecommerce.masterdata.InitialMasterDataCreator.CLIENT_EMAIL;
@@ -24,16 +26,13 @@ public class RegressionClientRegistrationTest {
     @Autowired
     private ClientRegistrationUseCases clientRegistrationUseCases;
     @Autowired
-    private ShoppingCartUseCases shoppingCartUseCases;
-    @Autowired
     private InitialMasterDataCreator initialMasterDataCreator;
 
     private MailAddressType nonExistingMailAddress;
 
     @BeforeEach
     public void setUp() {
-        shoppingCartUseCases.deleteAllOrders();
-        clientRegistrationUseCases.deleteAllClients();
+        initialMasterDataCreator.deleteAll();
         nonExistingMailAddress = instantiateMailAddress( "this@nononono.de" );
     }
 
@@ -91,8 +90,4 @@ public class RegressionClientRegistrationTest {
         assertThrows( ShopException.class, () -> clientRegistrationUseCases.getClientData( CLIENT_EMAIL[0] ) );
     }
 
-    @AfterEach
-    public void tearDown() {
-        initialMasterDataCreator.deleteAll();
-    }
 }
