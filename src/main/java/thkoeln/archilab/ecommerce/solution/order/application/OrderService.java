@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import thkoeln.archilab.ecommerce.solution.order.domain.Order;
 
+import java.sql.ClientInfoStatus;
 import java.util.List;
 
 @Service
@@ -16,6 +17,7 @@ public class OrderService {
     }
     public List<Order> getOrders(String mailAddress){
        return clientOrderServiceInterface.getOrders(mailAddress);
+
 
     }
 
