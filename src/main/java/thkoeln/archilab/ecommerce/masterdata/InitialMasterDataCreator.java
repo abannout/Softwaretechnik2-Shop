@@ -5,10 +5,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-import thkoeln.archilab.ecommerce.usecases.InventoryManagementUseCases;
-import thkoeln.archilab.ecommerce.usecases.ItemCatalogUseCases;
-import thkoeln.archilab.ecommerce.usecases.ClientRegistrationUseCases;
-import thkoeln.archilab.ecommerce.usecases.ClientType;
+import thkoeln.archilab.ecommerce.usecases.*;
 import thkoeln.archilab.ecommerce.usecases.domainprimitivetypes.MailAddressType;
 import thkoeln.archilab.ecommerce.usecases.domainprimitivetypes.HomeAddressType;
 import thkoeln.archilab.ecommerce.usecases.domainprimitivetypes.MoneyType;
@@ -137,6 +134,8 @@ public class InitialMasterDataCreator {
     private ClientRegistrationUseCases clientRegistrationUseCases;
     private ItemCatalogUseCases itemCatalogUseCases;
     private InventoryManagementUseCases inventoryManagementUseCases;
+    private ShoppingCartUseCases shoppingCartUseCases;
+
 
     // item 0 is out of inventory, item 1 and 2 have fixed quantities of 10 and 20, respectively, and the
     // others have a random inventory between 5 and 100
@@ -176,20 +175,25 @@ public class InitialMasterDataCreator {
     }
 
 
-    public void deleteAll() {
-        clientRegistrationUseCases.deleteAllClients();
-        itemCatalogUseCases.deleteItemCatalog();
-    }
-
     @Autowired
     public InitialMasterDataCreator(
             ClientRegistrationUseCases clientRegistrationUseCases,
             ItemCatalogUseCases itemCatalogUseCases,
-            InventoryManagementUseCases inventoryManagementUseCases ) {
+            InventoryManagementUseCases inventoryManagementUseCases,
+            ShoppingCartUseCases shoppingCartUseCases ) {
         this.clientRegistrationUseCases = clientRegistrationUseCases;
         this.itemCatalogUseCases = itemCatalogUseCases;
         this.inventoryManagementUseCases = inventoryManagementUseCases;
+        this.shoppingCartUseCases = shoppingCartUseCases;
     }
+
+
+    public void deleteAll() {
+        shoppingCartUseCases.deleteAllOrders();
+        itemCatalogUseCases.deleteItemCatalog();
+        clientRegistrationUseCases.deleteAllClients();
+    }
+
 
     public void registerAllClients() {
         for ( int i = 0; i < InitialMasterDataCreator.CLIENT_NAME.length; i++ ) {

@@ -32,8 +32,8 @@ Implement the following REST endpoints. We assume that the returned data is in J
 
 | Requirement                                                                    | Verb  | URI                                           | 
 |--------------------------------------------------------------------------------|-------|-----------------------------------------------|
-| (1) Find all orders for client with `mailAddressId`, ordered by time | GET   | /orders?mailAddress=...               |
-| (2) Find the latest order for client with `mailAddressId`            | GET   | /orders?mailAddress=...&filter=latest |
+| (1) Find all orders for client with `mailAddress`, ordered by time   | GET   | /orders?mailAddress=...               |
+| (2) Find the latest order for client with `mailAddress`              | GET   | /orders?mailAddress=...&filter=latest |
 
 
 The returned data in (1) and (2) needs to be an array of orders. If mailAddress is not found, or has no orders, 

@@ -1,20 +1,16 @@
 package thkoeln.archilab.ecommerce.regression;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import thkoeln.archilab.ecommerce.ShopException;
 import thkoeln.archilab.ecommerce.masterdata.InitialMasterDataCreator;
-import thkoeln.archilab.ecommerce.usecases.*;
+import thkoeln.archilab.ecommerce.usecases.InventoryManagementUseCases;
 
 import javax.transaction.Transactional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import static thkoeln.archilab.ecommerce.masterdata.InitialMasterDataCreator.ITEM_INVENTORY;
 import static thkoeln.archilab.ecommerce.masterdata.InitialMasterDataCreator.ITEM_DATA;
 
@@ -23,12 +19,6 @@ import static thkoeln.archilab.ecommerce.masterdata.InitialMasterDataCreator.ITE
 public class RegressionInventoryManagementTest {
 
     @Autowired
-    private ClientRegistrationUseCases clientRegistrationUseCases;
-    @Autowired
-    private ShoppingCartUseCases shoppingCartUseCases;
-    @Autowired
-    private ItemCatalogUseCases itemCatalogUseCases;
-    @Autowired
     private InventoryManagementUseCases inventoryManagementUseCases;
     @Autowired
     private InitialMasterDataCreator initialMasterDataCreator;
@@ -36,11 +26,10 @@ public class RegressionInventoryManagementTest {
 
     @BeforeEach
     public void setUp() {
-        shoppingCartUseCases.deleteAllOrders();
-        clientRegistrationUseCases.deleteAllClients();
-        itemCatalogUseCases.deleteItemCatalog();
+        initialMasterDataCreator.deleteAll();
         initialMasterDataCreator.addAllItems();
     }
+
 
 
     @Test
@@ -86,11 +75,6 @@ public class RegressionInventoryManagementTest {
         assertEquals( inventory6before - 1, inventory6after );
         assertEquals( inventory1before - 3, inventory1after );
         assertEquals( 0, inventory9after );
-    }
-
-    @AfterEach
-    public void tearDown() {
-        initialMasterDataCreator.deleteAll();
     }
 
 }

@@ -5,17 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import thkoeln.archilab.ecommerce.masterdata.InitialMasterDataCreator;
-import thkoeln.archilab.ecommerce.usecases.ItemCatalogUseCases;
-import thkoeln.archilab.ecommerce.usecases.ClientRegistrationUseCases;
 import thkoeln.archilab.ecommerce.usecases.domainprimitivetypes.MailAddressType;
 import thkoeln.archilab.ecommerce.usecases.domainprimitivetypes.MoneyType;
 
 import javax.transaction.Transactional;
-
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,15 +24,10 @@ import static thkoeln.archilab.ecommerce.masterdata.InitialMasterDataCreator.CLI
 
 @SpringBootTest
 @Transactional
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class E1OrdertRESTTest {
 
-    @Autowired
-    private ItemCatalogUseCases itemCatalogUseCases;
-    @Autowired
-    private ClientRegistrationUseCases clientRegistrationUseCases;
     @Autowired
     private InitialMasterDataCreator initialMasterDataCreator;
     @Autowired
@@ -48,8 +39,8 @@ public class E1OrdertRESTTest {
 
     @BeforeEach
     public void setUp() {
-        itemCatalogUseCases.deleteItemCatalog();
-        clientRegistrationUseCases.deleteAllClients();
+        initialMasterDataCreator.deleteAll();
+
         initialMasterDataCreator.addAllItems();
         initialMasterDataCreator.inventoryUpAllItems();
         initialMasterDataCreator.registerAllClients();
