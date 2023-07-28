@@ -80,7 +80,7 @@ public class ShoppingCartRestController {
                 return ResponseEntity.created(uri).body(shoppingCartDTO);
         }catch (ShopException e){
             e.printStackTrace();
-            return new ResponseEntity(HttpStatus.CONFLICT);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
 
         }
     }

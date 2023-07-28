@@ -4,12 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import thkoeln.archilab.ecommerce.solution.order.domain.Order;
 
-import java.sql.ClientInfoStatus;
 import java.util.List;
 
 @Service
 public class OrderService {
-    private ClientOrderServiceInterface clientOrderServiceInterface;
+    private final ClientOrderServiceInterface clientOrderServiceInterface;
 
     @Autowired
     public OrderService( ClientOrderServiceInterface clientOrderServiceInterface) {
@@ -24,4 +23,5 @@ public class OrderService {
     public Order getLatestOrder(String mailAddress){
         return clientOrderServiceInterface.getLatestOrder(mailAddress);
     }
+
 }

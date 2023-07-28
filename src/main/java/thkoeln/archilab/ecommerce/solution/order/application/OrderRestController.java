@@ -1,5 +1,8 @@
 package thkoeln.archilab.ecommerce.solution.order.application;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -11,62 +14,59 @@ import thkoeln.archilab.ecommerce.domainprimitives.Money;
 import thkoeln.archilab.ecommerce.solution.order.domain.Order;
 import thkoeln.archilab.ecommerce.solution.order.domain.OrderPart;
 
-import java.util.ArrayList;
-
-import java.util.List;
-import java.util.Objects;
-
 @RestController
 public class OrderRestController {
-    private final OrderService orderService;
 
-    @Autowired
-    public OrderRestController(OrderService orderService) {
-        this.orderService = orderService;
+  private final OrderService orderService;
+
+  @Autowired
+  public OrderRestController(OrderService orderService) {
+    this.orderService = orderService;
+  }
+
+
+  @GetMapping("/orders")
+  public ResponseEntity<List<OrderDTO>> getOrdersByMail(
+      @RequestParam(value = "mailAddress", required = false) String mailAddress,
+      @RequestParam(value = "filter", required = false) String filter
+  ) {
+    List<OrderDTO> orderDTOS = new ArrayList<>();
+
+    if (Objects.equals(filter, "latest")) {
+      var order = orderService.getLatestOrder(mailAddress);
+      if (order != null) {
+        orderDTOS.addAll(createOrderDTOList(order, mailAddress));
+      }
+    } else if (!StringUtils.isEmpty(mailAddress)) {
+      List<Order> orders = orderService.getOrders(mailAddress);
+      for (Order order : orders) {
+        orderDTOS.addAll(createOrderDTOList(order, mailAddress));
+      }
     }
 
-    @GetMapping("/orders")
-    public ResponseEntity<List<OrderDTO>> getOrdersByMail(@RequestParam(value = "mailAddress", required = false) String mailAddress,@RequestParam(value = "filter",required = false) String filter) {
+    return ResponseEntity.ok(orderDTOS);
+  }
 
-        List<OrderDTO> orderDTOS = new ArrayList<>();
-        var totalPrice=0.0f;
-        var currency = "";
-        if (Objects.equals(filter, "latest")){
-           var order = orderService.getLatestOrder(mailAddress);
-            List<OrderPartDTO> orderpartsDTO = new ArrayList<>();
-            if (order ==null){return ResponseEntity.ok(orderDTOS);}
+  private List<OrderDTO> createOrderDTOList(Order order, String mailAddress) {
+    List<OrderPartDTO> orderPartDTOS = new ArrayList<>();
+    var totalPrice = 0.0f;
+    var currency = "";
 
-
-            for (OrderPart orderPart : order.orderPartsList()
-            ) {
-                orderpartsDTO.add(new OrderPartDTO(orderPart.getItem().getUuid(), orderPart.getQuantity(), orderPart.getComment()));
-                totalPrice+= orderPart.getItem().getSellPrice().getAmount() * orderPart.getQuantity();
-                currency=orderPart.getItem().getSellPrice().getCurrency();
-            }
-            var mail = new MailAddress(mailAddress);
-            orderDTOS.add(new OrderDTO(order.getUuid(),mail,new Money(totalPrice,currency), orderpartsDTO));
-            return ResponseEntity.ok(orderDTOS);
-        }
-
-        if (StringUtils.isEmpty(mailAddress)) {
-            return ResponseEntity.ok(orderDTOS);
-        }
-        List<Order> orders = orderService.getOrders(mailAddress);
-        if (!orders.isEmpty()) {
-            List<OrderPartDTO> orderpartsDTO = new ArrayList<>();
-            for (Order order : orders
-            ) {
-                var total=0.0f;
-                for (OrderPart orderPart : order.orderPartsList()
-                ) {
-                    orderpartsDTO.add(new OrderPartDTO(orderPart.getItem().getUuid(), orderPart.getQuantity(), orderPart.getComment()));
-                    total+= orderPart.getItem().getSellPrice().getAmount() * orderPart.getQuantity();
-                    currency=orderPart.getItem().getSellPrice().getCurrency();
-                }
-                var mail = new MailAddress(mailAddress);
-                orderDTOS.add(new OrderDTO(order.getUuid(),mail,new Money(total,currency), orderpartsDTO));
-            }
-        }
-        return ResponseEntity.ok().body(orderDTOS);
+    for (OrderPart orderPart : order.orderPartsList()) {
+      orderPartDTOS.add(new OrderPartDTO(
+          orderPart.getItem().getUuid(),
+          orderPart.getQuantity(),
+          orderPart.getComment()
+      ));
+      totalPrice += orderPart.getItem().getSellPrice().getAmount() * orderPart.getQuantity();
+      currency = orderPart.getItem().getSellPrice().getCurrency();
     }
+
+    var mail = new MailAddress(mailAddress);
+    List<OrderDTO> orderDTOS = new ArrayList<>();
+    orderDTOS.add(
+        new OrderDTO(order.getUuid(), mail, new Money(totalPrice, currency), orderPartDTOS));
+    return orderDTOS;
+  }
+
 }
